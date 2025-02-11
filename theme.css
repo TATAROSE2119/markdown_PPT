@@ -1,0 +1,12 @@
+/**
+* @theme theme1
+* @auto-scaling fittingHeader,math
+* @size 4:3 960px 720px
+* @size 16:9 1280px 720px
+* @size 3:4 30cm 40cm
+*/
+
+@import "default";
+
+@import url("https://cdn.bootcdn.net/ajax/libs/highlight.js/11.7.0/styles/base16/pico.min.css");
+

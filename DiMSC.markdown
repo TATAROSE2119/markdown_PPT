@@ -1,12 +1,43 @@
+---
+marp: true
+size: 16:9
+paginate: true
+
+
+
+style: |
+  section {
+    font-family: 'Microsoft YaHei', sans-serif;
+    font-size: 17px;
+    line-height: 1.6;
+    position: relative;
+  }
+
+  section::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0%;
+    left:35%;
+    width: 100%;
+    height: 100%;
+    background-image: url('image/xiaohui.jpg');
+    background-position: right;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-blend-mode: lighten;
+    opacity: 0.2;
+    z-index: -1;
+  }
+
 
 ---
-# 多样性诱导的多视图子空间聚类（DiMSC）
 
-## 基于HSIC的多视图互补性探索
+# <!--fit--> 多样性诱导的多视图子空间聚类（DiMSC）
+作者：Xiaochun Cao
+时间：2015
+汇报人：潘岩
 
-### Xiaochun Cao
-
-### 2015
 ---
 
 #### **2. 研究背景与动机**  
@@ -44,7 +75,6 @@
   $$
   \mathcal{O} = \underbrace{\sum_{v} \text{重构误差}}_{\text{保证表示质量}} + \lambda_S \underbrace{\sum_{v} \text{平滑项}}_{\text{局部一致性}} + \lambda_V \underbrace{\sum_{v \neq w} \text{HSIC}}_{\text{多样性约束}}
   $$  
----
   - **HSIC公式**：  
     $$
     \text{HSIC} = \frac{1}{(n-1)^2} \text{tr}(\mathbf{K}^{(v)} \mathbf{H} \mathbf{K}^{(w)} \mathbf{H})
@@ -70,8 +100,6 @@
 
 - **评价指标**  
   - NMI, ACC, AR, F-score, Precision, Recall。  
----
-
 - **关键结果**  
   - **DiMSC全面领先**：在NMI、ACC等指标上显著优于基线（例：Extended YaleB的NMI提升4.1%）。  
   - **多样性有效性**：HSIC项显著减少冗余（对比NaMSC的相似性矩阵可视化）。  
@@ -86,3 +114,12 @@
 - **未来方向**  
   - 扩展至非线性核（如高斯核）。  
   - 探索更高效的多视图联合优化策略。  
+---
+
+<style>
+  h1 {
+    font-size: 90px;
+  }
+</style>
+
+# 谢谢观看 请批评指正
