@@ -10,25 +10,9 @@ style: |
     font-family: 'Microsoft YaHei', sans-serif;
     font-size: 17px;
     line-height: 1.6;
-    position: relative;
+    
   }
 
-  section::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    right: 0%;
-    left:35%;
-    width: 100%;
-    height: 100%;
-    background-image: url('image/xiaohui.jpg');
-    background-position: right;
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-blend-mode: lighten;
-    opacity: 0.2;
-    z-index: -1;
-  }
 
 
 ---
@@ -38,7 +22,11 @@ style: |
 时间：2015
 汇报人：潘岩
 
+![bg cover opacity:.1](https://bkimg.cdn.bcebos.com/pic/8326cffc1e178a82f156e505fd03738da977e829)
+
 ---
+
+![bg cover opacity:.1](https://bkimg.cdn.bcebos.com/pic/8326cffc1e178a82f156e505fd03738da977e829)
 
 #### **2. 研究背景与动机**  
 - **多视图数据的特点**  
@@ -51,6 +39,8 @@ style: |
   - 提出一种多视图聚类框架，通过HSIC强制视图多样性，提升聚类性能。  
 
 ---
+
+![bg cover opacity:.1](https://bkimg.cdn.bcebos.com/pic/8326cffc1e178a82f156e505fd03738da977e829)
 
 #### **3. 相关工作**  
 - **多视图聚类方法**  
@@ -65,6 +55,8 @@ style: |
   - 未显式约束视图间互补性（仅假设独立性）。  
 
 ---
+
+![bg cover opacity:.1](https://bkimg.cdn.bcebos.com/pic/8326cffc1e178a82f156e505fd03738da977e829)
 
 #### **4. 方法概述**  
 - **核心思想**  
@@ -88,6 +80,8 @@ style: |
 
 ---
 
+![bg cover opacity:.1](https://bkimg.cdn.bcebos.com/pic/8326cffc1e178a82f156e505fd03738da977e829)
+
 #### **5. 实验与结果**  
 - **数据集**  
   - Yale（人脸，光照/表情变化）  
@@ -107,6 +101,8 @@ style: |
 
 ---
 
+![bg cover opacity:.1](https://bkimg.cdn.bcebos.com/pic/8326cffc1e178a82f156e505fd03738da977e829)
+
 #### **6. 结论与未来工作**  
 - **结论**  
   - HSIC显式约束视图多样性，有效提升聚类性能。  
@@ -115,6 +111,9 @@ style: |
   - 扩展至非线性核（如高斯核）。  
   - 探索更高效的多视图联合优化策略。  
 ---
+
+
+![bg cover opacity:.1](https://bkimg.cdn.bcebos.com/pic/8326cffc1e178a82f156e505fd03738da977e829)
 
 <style>
   h1 {
