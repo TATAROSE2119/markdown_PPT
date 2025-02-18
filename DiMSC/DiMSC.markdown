@@ -8,10 +8,22 @@ paginate: true
 style: |
   section {
     font-family: 'Microsoft YaHei', sans-serif;
-    font-size: 17px;
-    line-height: 1.6;
-    
-  }
+    font-size: 18px;
+    line-height: 1.5;
+    }
+  section::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 60;
+    width: 120%;
+    height: 120%;
+    background: url('https://github.com/TATAROSE2119/markdown_PPT/blob/main/DiMSC/img/image.png?raw=true') no-repeat right;
+    background-size: contain;
+    opacity: 0.1; /* 设置背景图片透明度 */
+    pointer-events: none;
+    }
 
 
 
@@ -22,18 +34,16 @@ style: |
 时间：2015
 汇报人：潘岩
 
-![bg cover opacity:.1](https://bkimg.cdn.bcebos.com/pic/8326cffc1e178a82f156e505fd03738da977e829)
 
 ---
 
-![bg cover opacity:.1](https://bkimg.cdn.bcebos.com/pic/8326cffc1e178a82f156e505fd03738da977e829)
 
 #### **2. 研究背景与动机**  
 - **多视图数据的特点**  
   - 数据从多个视角/特征提取（如颜色、纹理、光流等）。  
   - 不同视图可能包含互补信息，但独立使用时存在信息冗余或不足。
   - 互补性：不同视图可能包含不同的信息。例如，颜色特征可能对光照变化敏感，而纹理特征可能对光照变化不敏感。如果能够结合这些视图的互补信息，可以提升聚类性能。
-- **现有方法的局限性**  
+- **朴素方法的局限性**  
   - 论文中先提出了一种朴素方法（如NaMSC）独立学习视图表示，NaMSC方法的目标是将多个视图的数据表示整合到一个共同的子空间中，以便进行聚类。每个视图都使用独立的子空间表示来表示数据，但是它们并未通过任何机制来确保不同视图之间的互补性。
   $$
      \min_{Z^{(v)}} \| X^{(v)} - X^{(v)} Z^{(v)} \|_F^2 + \alpha^{(v)} \Omega(Z^{(v)})
@@ -46,7 +56,6 @@ style: |
   - 缺乏对视图间依赖性的显式约束。  
 ---
 
-![bg cover opacity:.1](https://bkimg.cdn.bcebos.com/pic/8326cffc1e178a82f156e505fd03738da977e829)
 
 #### **3. 相关工作**  
 - **多视图聚类方法**  
@@ -62,7 +71,6 @@ style: |
 
 ---
 
-![bg cover opacity:.1](https://bkimg.cdn.bcebos.com/pic/8326cffc1e178a82f156e505fd03738da977e829)
 
 #### **4. 方法概述**  
 - **核心思想**  
@@ -73,6 +81,33 @@ style: |
   $$
   \mathcal{O} = \underbrace{\sum_{v} \text{重构误差}}_{\text{保证表示质量}} + \lambda_S \underbrace{\sum_{v} \text{平滑项}}_{\text{局部一致性}} + \lambda_V \underbrace{\sum_{v \neq w} \text{HSIC}}_{\text{多样性约束}}
   $$  
+
+  $$
+  O(Z^{(1)}, \dots, Z^{(V)}) = \sum_{v=1}^{V} \left( \| X^{(v)} - X^{(v)} Z^{(v)} \|_F^2 \right) + \sum_{v=1}^{V} \alpha^{(v)} \text{tr}(Z^{(v)} L^{(v)} Z^{(v)^T}) + \sum_{v \neq w} \lambda_V \text{HSIC}(Z^{(v)}, Z^{(w)})
+  $$
+
+  其中，各项的具体含义如下：
+
+  1. **重构误差项**：
+   $$
+   \| X^{(v)} - X^{(v)} Z^{(v)} \|_F^2
+   $$
+   度量了每个视图的重构误差，确保学习到的子空间表示 $Z^{(v)}$ 能够尽可能地重构原始数据 $X^{(v)}$。
+---
+- \
+  2. **平滑正则项**：
+   $$
+   \alpha^{(v)} \text{tr}(Z^{(v)} L^{(v)} Z^{(v)^T})
+   $$
+   它通过图拉普拉斯矩阵 $L^{(v)}$ 强制相似的样本在子空间表示中保持接近。此项的作用是保持数据点之间的结构一致性，确保同一类的数据点在聚类过程中被归到同一子空间。
+
+  3. **多样性约束项（HSIC项）**：
+   $$
+   \sum_{v \neq w} \lambda_V \text{HSIC}(Z^{(v)}, Z^{(w)})
+   $$
+   该项是论文中提出的关键部分，利用 **Hilbert-Schmidt独立性准则（HSIC）** 来强制不同视图之间的多样性。HSIC项用来度量不同视图的子空间表示之间的依赖性，目标是减少不同视图之间的冗余信息，从而提升互补性。通过最小化HSIC，确保不同视图之间的表示具有足够的多样性，避免了不同视图之间的过度相似性。
+
+---
   - **HSIC公式**：  
     $$
     \text{HSIC} = \frac{1}{(n-1)^2} \text{tr}(\mathbf{K}^{(v)} \mathbf{H} \mathbf{K}^{(w)} \mathbf{H})
@@ -86,7 +121,6 @@ style: |
 
 ---
 
-![bg cover opacity:.1](https://bkimg.cdn.bcebos.com/pic/8326cffc1e178a82f156e505fd03738da977e829)
 
 #### **5. 实验与结果**  
 - **数据集**  
@@ -107,7 +141,6 @@ style: |
 
 ---
 
-![bg cover opacity:.1](https://bkimg.cdn.bcebos.com/pic/8326cffc1e178a82f156e505fd03738da977e829)
 
 #### **6. 结论与未来工作**  
 - **结论**  
@@ -119,7 +152,6 @@ style: |
 ---
 
 
-![bg cover opacity:.1](https://bkimg.cdn.bcebos.com/pic/8326cffc1e178a82f156e505fd03738da977e829)
 
 <style>
   h1 {
