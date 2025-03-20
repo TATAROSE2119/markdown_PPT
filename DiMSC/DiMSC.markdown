@@ -153,7 +153,7 @@ style: |
   - **多样性有效性**：HSIC项显著减少冗余（对比NaMSC的相似性矩阵可视化）。  
   - **高效收敛**：5次迭代内收敛。  
 
-![bg w:650 right:50% ](https://github.com/TATAROSE2119/markdown_PPT/blob/main2/DiMSC/img/image%20copy.png?raw=true)
+![bg w:650 right:50% ](https://github.com/TATAROSE2119/markdown_PPT/blob/main2/DiMSC/img/image%20copy.png?https://github.com/TATAROSE2119/markdown_PPT/blob/main2/WSLA/img/image.png)
 
 ---
 
