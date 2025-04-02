@@ -46,7 +46,7 @@ style: |
 信号中存在周期性强脉冲干扰，TAS会保留，对只有白噪声的干扰降噪效果比较明显
 
 
-![bg w:650 left:50% ](https://github.com/TATAROSE2119/markdown_PPT/blob/main2/WSLA/img/image.png?raw=true)
+![bg w:650 left:50% ](https://github.com/TATAROSE2119/markdown_PPT/blob/main2/WSLA/img/image1.png?raw=true)
 
 ---
 
@@ -55,3 +55,4 @@ style: |
 采集振动信号和转速信号。
 使用计算阶次跟踪（COT）将时域信号重采样为角域信号，确保各段信号同步。
 
+![bg w:50 left:50% ](![alt text](image.png))
