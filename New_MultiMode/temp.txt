@@ -1,0 +1,114 @@
+为了详细推理如何从增广拉格朗日函数中得到 \( Z \) 的更新过程，我们将从增广拉格朗日函数的构建和求导步骤开始。我们已经知道增广拉格朗日函数是对原优化问题加入约束条件 \( X = XZ + E \) 和 \( Z = J \) 后的形式。具体推导如下：
+
+### 1. **增广拉格朗日函数的构建**
+
+增广拉格朗日函数的形式为：
+
+\[
+\mathcal{L}(Z, E, P, J, \Gamma, \Lambda) = \|J\|_* + \alpha \|E\|_{2,1} + \beta \cdot \text{Tr}(P^T X L X^T P) + \lambda \|P^T X (I - Z)\|_F^2
+\]
+\[
++ \langle \Gamma, X - XZ - E \rangle + \frac{\mu}{2} \|X - XZ - E\|_F^2 + \langle \Lambda, Z - J \rangle + \frac{\rho}{2} \|Z - J\|_F^2
+\]
+
+其中：
+- \( \Gamma \) 和 \( \Lambda \) 是拉格朗日乘子。
+- \( \mu, \rho \) 是惩罚参数。
+- \( \langle A, B \rangle = \text{Tr}(A^T B) \) 表示矩阵内积。
+
+### 2. **紧凑形式**
+
+为了简化表达，我们将增广拉格朗日函数转换为紧凑的形式：
+
+\[
+\mathcal{L}(Z, E, P, J, \Gamma, \Lambda) = \|J\|_* + \alpha \|E\|_{2,1} + \beta \cdot \text{Tr}(P^T X L X^T P) + \lambda \|P^T X (I - Z)\|_F^2
+\]
+\[
++ \frac{\mu}{2} \|X - XZ - E + \frac{\Gamma}{\mu}\|_F^2 + \frac{\rho}{2} \|Z - J + \frac{\Lambda}{\rho}\|_F^2 - \frac{1}{2\mu} \|\Gamma\|_F^2 - \frac{1}{2\rho} \|\Lambda\|_F^2
+\]
+
+### 3. **目标：求解 \( Z \)**
+
+我们现在需要通过对增广拉格朗日函数对 \( Z \) 进行求导来得到 \( Z \) 的更新规则。我们专注于与 \( Z \) 相关的项，并将它们组合起来。
+
+- **第一项** \( \|J\|_* \) 是 \( Z \) 的更新过程中不需要考虑的部分，因为它不依赖于 \( Z \)。
+- **第二项** \( \|E\|_{2,1} \) 也与 \( Z \) 无关。
+- **第三项** \( \text{Tr}(P^T X L X^T P) \) 和 **第四项** \( \|P^T X (I - Z)\|_F^2 \) 这两项与 \( Z \) 相关，因此需要进行处理。
+- **第五项** \( \langle \Gamma, X - XZ - E \rangle \) 和 **第六项** \( \langle \Lambda, Z - J \rangle \) 也与 \( Z \) 相关，需要计算对 \( Z \) 的梯度。
+
+### 4. **对 \( Z \) 求导**
+
+我们依次对每一项求导。
+
+#### 对 \( \|P^T X (I - Z)\|_F^2 \) 的求导：
+
+\[
+\|P^T X (I - Z)\|_F^2 = \text{Tr}((P^T X (I - Z))^T P^T X (I - Z))
+\]
+\[
+= \text{Tr}((I - Z)^T X^T P P^T X (I - Z))
+\]
+
+对 \( Z \) 求导：
+
+\[
+\frac{\partial}{\partial Z} \|P^T X (I - Z)\|_F^2 = -2P^T X (I - Z)
+\]
+
+#### 对 \( \langle \Gamma, X - XZ - E \rangle \) 的求导：
+
+\[
+\langle \Gamma, X - XZ - E \rangle = \text{Tr}(\Gamma^T (X - XZ - E))
+\]
+
+对 \( Z \) 求导：
+
+\[
+\frac{\partial}{\partial Z} \langle \Gamma, X - XZ - E \rangle = -X^T \Gamma
+\]
+
+#### 对 \( \langle \Lambda, Z - J \rangle \) 的求导：
+
+\[
+\langle \Lambda, Z - J \rangle = \text{Tr}(\Lambda^T (Z - J))
+\]
+
+对 \( Z \) 求导：
+
+\[
+\frac{\partial}{\partial Z} \langle \Lambda, Z - J \rangle = \Lambda
+\]
+
+### 5. **综合求导结果**
+
+将所有相关项的求导结果组合起来，我们得到关于 \( Z \) 的梯度：
+
+\[
+\nabla_Z \mathcal{L}(Z) = -2P^T X (I - Z) - X^T \Gamma + \Lambda
+\]
+
+### 6. **设置梯度为零并解方程**
+
+为了更新 \( Z \)，我们将梯度设置为零：
+
+\[
+0 = -2P^T X (I - Z) - X^T \Gamma + \Lambda
+\]
+
+重新整理，得到关于 \( Z \) 的方程：
+
+\[
+2P^T X (I - Z) = X^T \Gamma - \Lambda
+\]
+
+\[
+Z = I - (P^T X)^{-1} (X^T \Gamma - \Lambda)
+\]
+
+### 7. **最终的更新公式**
+
+在实际操作中，为了更新 \( Z \)，通常通过迭代的方式来调整 \( Z \)，每次根据上面的公式计算出新的 \( Z \) 值，直到满足收敛条件。
+
+### 结论
+
+通过增广拉格朗日法，我们得到了 \( Z \) 的更新公式，能够在每次迭代中更新 \( Z \) 以最小化目标函数，进而解决优化问题。

@@ -65,64 +65,57 @@ export_on_save:
 \begin{aligned}
 \mathcal{L}(Z, E, P, J, \Gamma, \Lambda) &= \|J\|_* + \alpha \|E\|_{2,1} + \beta \cdot \text{Tr}\left(P^\top X L X^\top P\right) + \lambda \left\|P^\top X (I - Z)\right\|_F^2 \\
 &\quad + \frac{\mu}{2} \left\|X - XZ - E + \frac{\Gamma}{\mu}\right\|_F^2 \\
-&\quad + \frac{\rho}{2} \left\|Z - J + \frac{\Lambda}{\rho}\right\|_F^2 \\
-&\quad - \frac{1}{2\mu} \|\Gamma\|_F^2 - \frac{1}{2\rho} \|\Lambda\|_F^2.
+&\quad + \frac{\mu}{2} \left\|Z - J + \frac{\Lambda}{\rho}\right\|_F^2 
 \end{aligned}
 \]
 ### 变量更新
-
-
-### **关键项说明**
-1. **核范数项**：\(\|J\|_*\) 约束辅助变量 \(J\) 的低秩性。
-2. **误差稀疏项**：\(\alpha \|E\|_{2,1}\) 强制误差矩阵 \(E\) 行稀疏。
-3. **图正则化项**：\(\beta \cdot \text{Tr}(P^\top X L X^\top P)\) 保留多模态数据的局部流形结构。
-4. **投影一致性项**：\(\lambda \|P^\top X (I - Z)\|_F^2\) 对齐投影后的数据与低秩表示。
-5. **约束惩罚项**：
-   - \(\frac{\mu}{2} \|X - XZ - E + \Gamma/\mu\|_F^2\) 强制数据重构误差符合 \(X = XZ + E\)。
-   - \(\frac{\rho}{2} \|Z - J + \Lambda/\rho\|_F^2\) 确保 \(Z\) 与辅助变量 \(J\) 一致。
-
-
-
-
-## 加入自适应重构损失项--在线更新（学习）机制
-加入自适应重构损失项，并且在原来的离线建模和在线监控过程中间加入在线学习过程，在线学习过程根据自适应重构损失项来选择并调整当前测试数据所对应mode的$P_{mode}$,调整过程是增量更新过程。\
-自适应重构损失项的具体形式$f(\cdot)$待定
+#### step 1 :J
 $$
-\mathcal{L}_{\text{recon}}^{\text{adaptive}}=f(P_s,w_s,..)
+\min_J \|J\|_*+\frac{\mu}{2}\left\|Z - J + \frac{\Lambda}{\rho}\right\|_F^2
+$$
+然后，可以通过奇异值阈值 （SVT）  计算
+$$
+J_{k+1}=\Theta _{(1/\mu)}(Z+\frac{\Lambda}{\rho})
+$$
+#### step 2 :Z
+$$
+\min_Z\frac{\lambda}{2} \left\|P^\top X (I - Z)\right\|_F^2+\frac{\mu}{2} \left\|X - XZ - E + \frac{\Gamma}{\mu}\right\|_F^2+\frac{\mu}{2} \left\|Z - J + \frac{\Lambda}{\mu}\right\|_F^2
 $$
 $$
-\mathcal{L}_{\text{recon}}^{\text{adaptive}}=\sum^S_{s=1} w_s\|f(P_s,w_s,...)\|
+\downdownarrows
 $$
-## 引入动态权重 $w_s$ 对每个模式的重构误差进行加权 
 
-这样，对于测试数据中未出现的模式，其对应的 $w_s$ 将被动态降低（甚至趋于零），使得这些模式对整体重构误差的贡献减弱。
+$$
+\min_Z\frac{\lambda}{2} \left\|P^\top X (I - Z)\right\|_F^2+\frac{\mu}{2} \left(\left\|X - XZ - E + \frac{\Gamma}{\mu}\right\|_F^2+ \left\|Z - J + \frac{\Lambda}{\mu}\right\|_F^2\right)
+$$
 
-$w_s$的设计：\
-**对于每个模式s，可以预先计算该模式的代表性向量$\mu_s$**，$\mu_s$可以是训练数据中每个模式的均值或者聚类中心。\
-采用点积或者余弦相似度
+对$Z$求导并令其等于0，得到Z的闭式解
 $$
-s_s=f(\mathbf{x_{new}},\mu_s)
+Z_{k+1}=(\lambda X^TPP^TX+\mu X^TX+\mu I)^{-1}(\lambda X^TPP^TX+\mu X^TX-\mu X^TE+\mu J+X^T\Gamma-\Lambda)
 $$
-可以在 softmax 前加入一个门限 $\tau$：
+#### step 3 : P
 $$
-w_s = 
-\begin{cases}
-\frac{\exp(\lambda s_s)}{\sum_{s=1}^{S} \exp(\lambda s_s)}, & \text{if } 
-s_s \ge \tau \\
-0, & \text{if } s_s < \tau
-\end{cases}
+\min_P \frac{\beta}{2}\text{Tr}\left(P^\top X L X^\top P\right) + \frac{\lambda}{2} \left\|P^\top X (I - Z)\right\|_F^2
 $$
-这样，当相似度低于阈值时，模式 $s$ 的权重 $w_s$ 将为零，从而忽略该模式对重构损失的贡献。
-## **在线学习增量更新模型参数**
-1. **增量更新**：  
-通过在线学习算法对模型参数进行更新。在线学习意味着在每次获得新数据后，不是重新训练整个模型，而是通过增量更新已有模型：
-- 对于每个模式 $s$，更新投影矩阵 $P_s$ ，通过梯度下降或其他优化方法：
-     $$
-     P_{s,excat} \leftarrow P_{s,original} - \eta \frac{\partial \mathcal{L}_{\text{recon}}^{\text{adaptive}}}{\partial P_s}
-     $$
-     其中，$\eta$ 是学习率，$\frac{\partial \mathcal{L}_{\text{recon}}^{\text{adaptive}}}{\partial P_s}$ 是重构损失对$P_s$ 的梯度。第一次迭代使用$P_{s,original}$。每得到一个$\mathbf{x_{new}}$，都只增量更新一次。
+$$
+\downdownarrows
+$$
+$$
+\begin{aligned}
+\min_P \frac{\beta}{2}\text{Tr}\left( P^T X L X^T P \right) + \frac{\gamma}{2}\text{Tr}\left( P^T X (Z - I) (Z - I)^T X^T P \right) 
+\end{aligned}
+$$
+通过解析以下特征函数来获得
+$$
+X( \gamma((Z - I) (Z - I)^T) + \beta L) X^T p = \xi p
+$$
+$\xi$ 表示特征值，$p$表示对应的特征向量
 
-1. **更新其他模型参数 ???**：  
-   除了投影矩阵 $P_s$，可能还需要根据目标函数的其他部分更新模型的其它参数
+#### step 4 :E
 
-![alt text](image-1.png)
+#### step 5 :others
+$$
+\Gamma _{k+1}=\Gamma_{k}+\mu_k \left( X - X Z k+1 - E_{k+1} \right)\\
+\Lambda _{k+1} = \Lambda_{k} + \mu_k \left( Z_{k+1} - Q_{k+1} \right)\\
+\mu_{k+1} = \min(\rho \mu_k, \mu_{\max})
+$$
