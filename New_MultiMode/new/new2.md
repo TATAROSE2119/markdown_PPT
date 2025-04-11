@@ -2,8 +2,20 @@
 export_on_save:
     puppeteer: true # 保存文件时导出 PDF
 ---
+逐步构建过程
 $$
-\min_{P,Z,Q,E} \sum_{s=1}^S\|Z_s\|_*+\beta \sum_{s=1}^S\|Q_s\|_F^2+\gamma \sum_{s=1}^S\|E_s\|_{2,1}+\delta \sum_{s=1}^S\|X_s-XQ_s\|_F^2+\kappa  \sum_{s=1}^S\|P_sX_s-P_sX_sZ_s\|_F^2+\lambda \sum_{s \not ={t}}\text{HSIC}(Z_s,Z_t)\\
+X_s=XQ_s
+$$
+
+$$
+\min_{Q_s}\sum_{s=1}^S\|Q_s\|_F^2\\
+\text{s.t.}X_s=XQ_s+E_{1,s}
+$$
+
+
+$$
+\min_{P,Z,Q,E} \sum_{s=1}^S\|Z_s\|_*+\beta \sum_{s=1}^S\|Q_s\|_F^2+\gamma \sum_{s=1}^S\|E_s\|_{2,1}+\delta \sum_{s=1}^S\|X_s-XQ_s\|_F^2\\
++\kappa  \sum_{s=1}^S\|P_sX_s-P_sX_sZ_s\|_F^2+\lambda \sum_{s \not ={t}}\text{HSIC}(Z_s,Z_t)\\
 \text{s.t.}X_s=X_sZ_s+E_s,P_s^TP_s=I
 $$
 
@@ -11,7 +23,7 @@ $$
 $X=[X_1,X_2,\dots,X_S]\in \mathbb{R} ^{D\times N}$,是多模态数据，D为原始数据的特征数，N为所有模态数据的样本总数$ N=\sum^{S}n_s $
 $X_s\in\mathbb{R} ^{D\times n_s}$,是每个模态的数据
 $P_s\in\mathbb{R} ^{d\times D}$,d为降维之后特征数
-$Q_s\in\mathbb{R} ^{N\times n_s}$, $n_s$为单个模态数据的样本数
+$Q_s\in\mathbb{R} ^{N\times n_s}$,是筛选矩阵，将单模态数据从原始数据中提取出来， $n_s$为单个模态数据的样本数。
 $Z_s\in\mathbb{R} ^{n_s\times n_s}$
 $E_s\in\mathbb{R} ^{D\times n_s}$
 引入辅助变量J
@@ -63,6 +75,8 @@ $$
 \Downarrow 更新
 $$
 
+### 通过解析解更新
+
 #### step 1 J
 $$
 J_{k+1}=\Theta (\frac{1}{\mu})\left(Z+\frac{\Delta}{\mu}\right) 
@@ -97,6 +111,11 @@ $\rightarrow $
 $$
 (2\kappa A^TA+\mu X^TX+\mu I)Z+ Z\lambda(K^T+K)=2\kappa A^TA+\mu X^TX-\mu X^T(E-\Lambda/2)+\mu J-\mu /2 \Delta
 $$
+其中：
+$$
+A=PX,K=\sum_{t=1,t \not ={s}}^SHK_tH,K_t=Z_t^TZ_t
+$$
+$H=I-\frac{1}{n}11^T$是中心化矩阵，
 ```matlab
 Z = sylvester(A, B, C);
 ```
@@ -120,8 +139,10 @@ $$
 $$
 Q_s=(\beta I+\delta X^TX)^{-1}\delta X^TX_s
 $$
-
-
+也可以换成梯度下降法求解
+$$
+Q_{s,k+1}=Q_{s,k}-\eta (2\beta Q_{s,k}-2\delta X^T(X_s-XQ_{s,k}))
+$$
 #### step 5 E
 $$
 \min_{E_s}\gamma \|E_s\|_{2,1}+\frac{\mu}{2}\left\lVert X_s-X_sZ_s-E_s+\frac{\Gamma}{\mu}\right\rVert_F^2
