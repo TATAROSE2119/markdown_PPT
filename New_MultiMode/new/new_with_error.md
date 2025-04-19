@@ -6,10 +6,17 @@ export_on_save:
 $X_s=XQ_s+E_{1,s}$找出选择矩阵$Q_s$
 
 $$
-\min_{Q_s}\sum_{s=1}^S\|Q_s\|_F^2+\sum_{s=1}^S\|Z_{1,s}\|_{2,1} \\
+\min_{Q_s}\sum_{s=1}^S\|Q_s\|_F^2+\sum_{s=1}^S\|E_{1,s}\|_{2,1} \\
 \text{s.t.}X_s=XQ_s+E_{1,s}
 $$
+其中：
 
+$X=[X_1,X_2,\dots,X_S]\in \mathbb{R} ^{D\times N}$,是多模态数据，D为原始数据的特征数，N为所有模态数据的样本总数$ N=\sum^{S}n_s $
+$X_s\in\mathbb{R} ^{D\times n_s}$,是每个模态的数据
+$P_s\in\mathbb{R} ^{d\times D}$,d为降维之后特征数
+$Q_s\in\mathbb{R} ^{N\times n_s}$,（什么功能的矩阵？） $n_s$为单个模态数据的样本数。
+$Z_s\in\mathbb{R} ^{n_s\times n_s}$
+$E_s\in\mathbb{R} ^{D\times n_s}$
 加入低秩表示投影和HSIC约束
 $$
 \min_{P,Z,Q,E_1,E_2} \sum_{s=1}^S\|Z_s\|_*+\beta \sum_{s=1}^S\|Q_s\|_F^2+\gamma \sum_{s=1}^S\|E_{1,s}\|_{2,1}+\delta \sum_{s=1}^S\|E_{2,s}\|_{2,1}\\
@@ -27,7 +34,7 @@ $$
 $$
 \begin{aligned}
 &\mathcal{L} (P,Z,Q,E_1,E_2,J,Y_1,Y_2,Y_3)\\
-&=\sum_{s=1}^S\|JJ_s\|_*+\beta \sum_{s=1}^S\|Q_s\|_F^2+\gamma \sum_{s=1}^S\|E_{1,s}\|_{2,1}+\delta \sum_{s=1}^S\|E_{2,s}\|_{2,1}\\
+&=\sum_{s=1}^S\|J_s\|_*+\beta \sum_{s=1}^S\|Q_s\|_F^2+\gamma \sum_{s=1}^S\|E_{1,s}\|_{2,1}+\delta \sum_{s=1}^S\|E_{2,s}\|_{2,1}\\
 &+\kappa  \sum_{s=1}^S\|P_sXQ_s-P_sXQ_sZ_s\|_F^2+\lambda \sum_{s \not ={t}}\text{HSIC}(Z_s,Z_t)\\
 &+\frac{\mu}{2}\|X_s-XQ_s-E_{1,s}+\frac{Y_1}{\mu}\|\\
 &+\frac{\mu}{2}\|XQ_s-XQ_sZ_s-E_{2,s}+\frac{Y_2}{\mu}\|\\
@@ -53,9 +60,7 @@ $$
 # 更新
 ## 1. J ...
 ## 2. Z
-$$
-\min_Z 
-$$
+
 ```matlab
 kappa*tr((P*X*Q-P*X*Q*Z)*(P*X*Q-P*X*Q*Z)')
 +mu/2*tr((X*Q-X*Q*Z-E2+Y2/mu)*(X*Q-X*Q*Z-E2+Y2/mu)')
@@ -115,36 +120,7 @@ gradient:
   &-mu X^\top  (Xs-X Q-E1+1/mu Y1)
 \end{aligned}
 \]
-梯度下降法更新Q
-```matlab
-% 假设已定义所需的变量：P, X, Z, E2, E1, Y2, Y3, J, Y1, mu, kappa, lambda, beta
 
-% 初始化 Q，设置初始值
-Q = initial_Q;  % initial_Q 为 Q 的初始值，应该根据实际情况设定
-learning_rate = 0.01;  % 设置学习率 alpha
-max_iter = 1000;  % 最大迭代次数
-tolerance = 1e-6;  % 梯度下降的停止条件
+## 5. E1
 
-% 迭代进行梯度下降
-for iter = 1:max_iter
-    % 计算目标函数关于 Q 的梯度
-    grad_Q = 2 * beta * Q + 2 * kappa * (P * X)' * (P * X * Q - P * X * Q * Z) ...
-             - 2 * kappa * (P * X)' * (P * X * Q - P * X * Q * Z) * Z' ...
-             + mu * X' * (X * Q - X * Q * Z - E2 + 1 / mu * Y2) ...
-             - mu * X' * (X * Q - X * Q * Z - E2 + 1 / mu * Y2) * Z' ...
-             - mu * X' * (X_s - X * Q - E1 + 1 / mu * Y1) ...
-             + mu * X' * (X * Q - X * Q * Z - E2 + 1 / mu * Y3) ...
-             - mu * X' * (X * Q - X * Q * Z - E2 + 1 / mu * Y3) * Z';
-         
-    % 更新 Q
-    Q = Q - learning_rate * grad_Q;
-    
-    % 判断收敛条件（梯度的范数小于容忍度）
-    if norm(grad_Q, 'fro') < tolerance
-        fprintf('梯度下降法已收敛，迭代次数：%d\n', iter);
-        break;
-    end
-end
-
-
-```
+## 6. E2

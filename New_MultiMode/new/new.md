@@ -9,10 +9,6 @@ $$
 \text{s.t.}XQ_s=XQ_sZ_s+E_s,P_s^TP_s=I
 $$
 
-$$
-\min_{P,Z,Q}\sum_{s=1}^S\|Q_s\|_F^2+\sum_{s=1}^S\|X_s-XQ_s\|_F^2++\sum_{s=1}^S\gamma\|P_sX_s-P_sX_sZ_s\|_F^2\\
-\text{s.t.}X_s=X_sZ_s+E_s,P_s^TP_s=I
-$$
 
 其中：
 $X=[X_1,X_2,\dots,X_S]\in \mathbb{R} ^{D\times N}$,是多模态数据，D为原始数据的特征数，N为所有模态数据的样本总数$ N=\sum^{S}n_s $
@@ -73,9 +69,9 @@ $$
 +\sum_{s=1}^S\frac{\mu}{2}\left(\left\lVert XQ_s-XQ_sZ_s-E_s+\frac{\Lambda_s}{\mu}\right\rVert _F^2+\left\lVert Z_s-J_s+\frac{\Pi_s}{\mu}\right\rVert _F^2\right)  
 $$
 
-2. Z
+1. Z
    
-3. P
+2. P
 $$
 \min_P \gamma\|PXQ-PXQZ\|_F^2
 $$
